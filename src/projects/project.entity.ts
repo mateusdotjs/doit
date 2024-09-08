@@ -3,11 +3,13 @@ import {
   BeforeUpdate,
   Column,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Task } from '../tasks/task.entity';
 import slugify from '../utils/slugify';
+import { User } from '../users/entities/user.entity';
 
 @Entity()
 export class Project {
@@ -31,6 +33,9 @@ export class Project {
 
   @OneToMany(() => Task, (task) => task.project)
   tasks: Task[];
+
+  @ManyToOne(() => User, (user) => user.project)
+  user: User;
 
   @BeforeInsert()
   @BeforeUpdate()

@@ -5,8 +5,8 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
-  Put,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dtos/create-task.dto';
@@ -25,26 +25,25 @@ export class TasksController {
     return this.tasksService.create(createTaskDto, slug);
   }
 
-  @Put(':projectSlug/:id')
-  update(
-    @Body() updateTaskDto: UpdateTaskDto,
-    @Param('projectSlug') projectSlug: string,
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<Task> {
-    return this.tasksService.update(updateTaskDto, projectSlug, id);
-  }
-
   @Get(':projectSlug')
   findAllbyProject(@Param('projectSlug') projectSlug: string): Promise<Task[]> {
     return this.tasksService.findAllbyProject(projectSlug);
   }
 
   @Get(':projectSlug/:id')
-  findOne(
+  findOnebyProject(
     @Param('projectSlug') projectSlug: string,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Task> {
     return this.tasksService.findOnebyProject(projectSlug, id);
+  }
+
+  @Patch(':id')
+  update(
+    @Body() updateTaskDto: UpdateTaskDto,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Task> {
+    return this.tasksService.update(updateTaskDto, id);
   }
 
   @Delete(':id')

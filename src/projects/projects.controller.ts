@@ -4,8 +4,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
 } from '@nestjs/common';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dtos/create-project.dto';
@@ -31,7 +31,7 @@ export class ProjectsController {
     return this.projectsService.findOne(slug);
   }
 
-  @Put(':slug')
+  @Patch(':slug')
   update(
     @Body() updateProjectDto: UpdateProjectDto,
     @Param('slug') slug: string,

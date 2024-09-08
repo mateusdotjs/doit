@@ -2,24 +2,23 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { Repository } from 'typeorm';
-import { Project } from '../projects/project.entity';
 import { CreateTaskDto } from './dtos/create-task.dto';
 import { UpdateTaskDto } from './dtos/update-task.dto';
+import { ProjectsService } from '../projects/projects.service';
 
 @Injectable()
 export class TasksService {
   constructor(
     @InjectRepository(Task)
     private tasksRepository: Repository<Task>,
-    @InjectRepository(Project)
-    private projectRepository: Repository<Project>,
+    private projectsService: ProjectsService,
   ) {}
 
   async create(createTaskDto: CreateTaskDto, slug: string): Promise<Task> {
     //nomeado como project para que bata com o entity Task
-    const project = await this.projectRepository.findOneBy({ slug });
+    const project = await this.projectsService.findOne(slug);
     if (!project) {
-      throw new NotFoundException('Erro: Projeto não encontrado');
+      throw new NotFoundException('Projeto não encontrado');
     }
 
     const taskToCreate = this.tasksRepository.create({
@@ -44,17 +43,12 @@ export class TasksService {
     });
   }
 
-  async update(
-    updateTaskDto: UpdateTaskDto,
-    projectSlug: string,
-    id: number,
-  ): Promise<Task> {
+  async update(updateTaskDto: UpdateTaskDto, id: number): Promise<Task> {
     const taskToUpdate = await this.tasksRepository.findOneBy({
-      project: { slug: projectSlug },
       id,
     });
     if (!taskToUpdate) {
-      throw new NotFoundException('Erro: Tarefa não encontrada');
+      throw new NotFoundException('Tarefa não encontrada');
     }
 
     Object.assign(taskToUpdate, updateTaskDto);
@@ -64,7 +58,7 @@ export class TasksService {
   async destroy(id: number): Promise<Task> {
     const taskToRemove = await this.tasksRepository.findOneBy({ id });
     if (!taskToRemove) {
-      throw new NotFoundException('Tarefa inexistente');
+      throw new NotFoundException('Tarefa não encontrada');
     }
     return await this.tasksRepository.remove(taskToRemove);
   }
